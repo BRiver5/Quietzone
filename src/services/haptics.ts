@@ -1,13 +1,21 @@
-// Тонкая обёртка над expo-haptics. Вибрация — это единственное "физическое"
-// разрешение, которое реально используется в приложении помимо уведомлений
-// (Android добавляет VIBRATE автоматически вместе с этим модулем).
+// Тонкая обёртка над expo-haptics с глобальным выключателем из Settings.
 
 import * as Haptics from "expo-haptics";
 
+let enabled = true;
+export function setHapticsEnabled(v: boolean) {
+  enabled = v;
+}
+
+const run = (fn: () => Promise<void>) => {
+  if (enabled) fn().catch(() => {});
+};
+
 export const haptics = {
-  tap: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-  press: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-  success: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-  warning: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
-  error: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
+  tap: () => run(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)),
+  press: () => run(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)),
+  tick: () => run(() => Haptics.selectionAsync()),
+  success: () => run(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)),
+  warning: () => run(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)),
+  error: () => run(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)),
 };
