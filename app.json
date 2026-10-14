@@ -5,11 +5,11 @@
     "version": "1.0.0",
     "scheme": "quietzone",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./release/creo/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./release/creo/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#F5F6F3"
     },
@@ -21,8 +21,8 @@
       "package": "com.quietzone.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundImage": "./assets/adaptive-icon-background.png",
-        "foregroundImage": "./assets/adaptive-icon-foreground.png"
+        "foregroundImage": "./release/creo/adaptive-foreground.png",
+        "backgroundColor": "#0E9B91"
       },
       "predictiveBackGestureEnabled": false,
       "_comment_blockedPermissions": "Quietzone: only VIBRATE. No notifications, no network (codes are generated on device), no camera (no scanning), no gallery (export goes through the system share/print sheet).",

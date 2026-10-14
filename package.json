@@ -10,7 +10,8 @@
     "icons": "node tools/generate-icons.js",
     "check-rules": "node tools/check-rules.js",
     "test": "node --test",
-    "verify": "node tools/verify.js"
+    "verify": "node tools/verify.js",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
