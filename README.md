@@ -1,43 +1,17 @@
 # Quietzone
 
-**{{TAGLINE}}**
+QR codes that actually scan. A local-only QR studio with its own ISO 18004 encoder:
+it checks a code before you print it — logo damage block by block, colour contrast,
+quiet zone, and module size for the scan distance — offers verified fixes, and
+learns your printer from the scan tests you log.
 
-{{Один абзац о том, что делает приложение и для кого.}}
+- Expo SDK 54, expo-router, expo-sqlite, reanimated, react-native-svg, expo-print, expo-sharing
+- No backend, no network permission, no camera.
 
-## Особенности
-
-- ...
-
-## Стек
-
-- Expo SDK 54 + expo-router, TypeScript
-- `expo-sqlite` — вся persistence локально на устройстве, интернет не нужен
-- `expo-notifications` / `expo-haptics` — если приложение их использует
-
-## Запуск
-
-```bash
+```
 npm install
-npx expo start
+npx expo start          # Expo Go
+npm run verify          # tsc + tests + rules + export
 ```
 
-`a` — Android, `i` — iOS, либо QR-код через Expo Go.
-
-## Структура проекта
-
-```
-app/            expo-router экраны
-src/
-  theme/        палитра, типографика, отступы, анимации
-  db/           expo-sqlite схема + миграции
-  data/         доступ к данным (замени items.example.ts)
-  services/     notifications, haptics
-  components/   переиспользуемые UI-примитивы
-  lib/          id, даты
-tools/          генератор иконок, проверки, rename-скрипт
-```
-
-## Данные
-
-Все данные хранятся локально на устройстве. Регистрации нет, интернет не
-требуется для работы приложения.
+Engine and design notes: [PLAN.md](PLAN.md).
