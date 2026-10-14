@@ -96,7 +96,7 @@ export default function Studio() {
             )}
             {burst ? (
               <View key={burst} style={{ position: "absolute", top: 16, right: 16 }}>
-                <SuccessBurst visible size={48} />
+                <SuccessBurst visible size={48} onDone={() => setTimeout(() => setBurst(0), 500)} />
               </View>
             ) : null}
           </View>

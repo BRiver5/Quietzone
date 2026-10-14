@@ -20,8 +20,8 @@ export function gridValue(i: number): number {
   return GRID_MIN * Math.pow(GRID_MAX / GRID_MIN, i / (GRID_N - 1));
 }
 
-// Априор: логнормаль вокруг правила "10 ширин кода", широкая (σ = 0.6 в ln).
-export function priorPosterior(center = DEFAULT_RATIO, sigma = 0.6): number[] {
+// Априор: логнормаль вокруг правила "10 ширин кода" (σ = 0.45 в ln).
+export function priorPosterior(center = DEFAULT_RATIO, sigma = 0.45): number[] {
   const w = Array.from({ length: GRID_N }, (_, i) => {
     const z = Math.log(gridValue(i) / center) / sigma;
     return Math.exp(-0.5 * z * z);
@@ -64,7 +64,7 @@ export function quantile(post: number[], q: number): number {
 }
 
 export type ProfileSummary = {
-  recommended: number; // 90-й перцентиль θ — с запасом
+  recommended: number; // без тестов — медиана (= базовое правило), с тестами — 80-й перцентиль, с запасом
   median: number;
   lo: number; // 10%
   hi: number; // 90%
@@ -76,7 +76,9 @@ export function summarize(post: number[], tests: number): ProfileSummary {
   const hi = quantile(post, 0.9);
   const spread = Math.log(hi / lo);
   return {
-    recommended: hi,
+    // Профиль без тестов не должен быть строже базового правила: иначе сам
+    // факт выбора профиля урезал бы дальность вдвое (поймано на эмуляторе).
+    recommended: tests === 0 ? quantile(post, 0.5) : quantile(post, 0.8),
     median: quantile(post, 0.5),
     lo,
     hi,

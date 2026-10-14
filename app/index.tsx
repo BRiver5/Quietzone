@@ -67,7 +67,14 @@ export default function Library() {
 
   const grid = (list: Code[], withAdd: boolean, keyPrefix: string) => {
     const cells: React.ReactNode[] = [];
-    if (withAdd) cells.push(<AddCard key="add" w={cardW} onPress={() => setNewOpen(true)} empty={!codes.length} />);
+    // Пустая библиотека: "+" на всю ширину — одна карточка в левой колонке выглядела обрубком.
+    if (withAdd && !codes.length) {
+      children.push(
+        <Animated.View key="add-wide" entering={FadeInDown.duration(380)} style={{ marginBottom: 12 }}>
+          <AddCard w={width - 40} onPress={() => setNewOpen(true)} empty />
+        </Animated.View>
+      );
+    } else if (withAdd) cells.push(<AddCard key="add" w={cardW} onPress={() => setNewOpen(true)} empty={false} />);
     list.forEach((c) => cells.push(<CodeCard key={c.id} code={c} w={cardW} onMenu={() => setMenu(c)} profiles={profiles} />));
     for (let i = 0; i < cells.length; i += 2) {
       children.push(
@@ -211,7 +218,7 @@ function AddCard({ w, onPress, empty }: { w: number; onPress: () => void; empty:
     <PressableScale
       onPress={onPress}
       scaleTo={0.96}
-      style={{ width: w, minHeight: w + 52, borderRadius: t.radius.lg, borderWidth: 1.5, borderStyle: "dashed", borderColor: t.colors.accent, alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: empty ? t.colors.accentSoft : "transparent" }}
+      style={{ width: w, minHeight: empty ? 150 : w + 52, flexDirection: empty ? "row" : "column", borderRadius: t.radius.lg, borderWidth: 1.5, borderStyle: "dashed", borderColor: t.colors.accent, alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: empty ? t.colors.accentSoft : "transparent" }}
     >
       <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: t.colors.accent, alignItems: "center", justifyContent: "center" }}>
         <Plus size={22} color={t.colors.onAccent} />

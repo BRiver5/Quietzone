@@ -26,7 +26,7 @@ export function AnatomyMap({ qr, size, selected }: { qr: QrCode; size: number; s
         if (k === "data") {
           const cw = qr.codewordAt[y * qr.size + x];
           if (cw < 0) continue;
-          add(`b${qr.blockOf[cw]}${qr.isEccWord[cw] ? "e" : "d"}`, x, y);
+          add(`b${qr.blockOf[cw]}${qr.isEccWord[cw] ? "e" : "d"}${qr.modules[y][x] ? 1 : 0}`, x, y);
         } else if (qr.modules[y][x] || k === "remainder") add(k, x, y);
       }
     return out;
@@ -36,10 +36,14 @@ export function AnatomyMap({ qr, size, selected }: { qr: QrCode; size: number; s
       <Rect x={-1} y={-1} width={qr.size + 2} height={qr.size + 2} fill={t.colors.surface} />
       {Object.entries(paths).map(([key, d]) => {
         if (key.startsWith("b")) {
-          const b = Number(key.slice(1, -1));
-          const ecc = key.endsWith("e");
+          // Ключ b{блок}{d|e}{тёмный}: карта остаётся похожей на сам код —
+          // тёмные модули цветом блока (коррекция бледнее), светлые едва тонированы.
+          const b = Number(key.slice(1, -2));
+          const ecc = key[key.length - 2] === "e";
+          const darkMod = key.endsWith("1");
           const dim = selected !== null && selected !== b;
-          return <Path key={key} d={d} fill={blockColor(b)} opacity={dim ? 0.08 : ecc ? 0.45 : 1} />;
+          const base = darkMod ? (ecc ? 0.5 : 1) : 0.13;
+          return <Path key={key} d={d} fill={blockColor(b)} opacity={dim ? base * 0.12 : base} />;
         }
         return <Path key={key} d={d} fill={kindColors[key as keyof typeof kindColors] ?? t.colors.ink} opacity={selected !== null ? 0.35 : 1} />;
       })}

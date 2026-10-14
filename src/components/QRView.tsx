@@ -1,13 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
-import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
-import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
+import Svg, { Path, Rect } from "react-native-svg";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Coffee, Link2, Mail, Phone, Star, User, Wifi } from "lucide-react-native";
 import type { QrCode } from "../lib/qr/encode.ts";
 import { logoSide } from "../lib/damage.ts";
 import type { LogoIcon } from "../data/repo";
-
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
+import { light } from "../theme/colors";
 
 const ICONS: Record<Exclude<LogoIcon, "none">, typeof Wifi> = { wifi: Wifi, link: Link2, phone: Phone, mail: Mail, user: User, star: Star, coffee: Coffee };
 
@@ -30,7 +29,9 @@ export function modulesPath(modules: boolean[][], offset: number, pick?: (x: num
 
 export type Highlight = { cells: { x: number; y: number }[]; color: string };
 
-// Код "проявляется" сканирующей линией сверху вниз при каждой смене матрицы.
+// Код "проявляется" сканирующей линией сверху вниз при каждой смене матрицы:
+// поверх лежит шторка цвета фона и уезжает вниз (анимированный ClipPath в
+// react-native-svg на Android не перерисовывался — код оставался белым).
 export function QRView({
   qr,
   size,
@@ -41,6 +42,7 @@ export function QRView({
   logoIcon = "none",
   highlights = [],
   animate = true,
+  logoGhost = false,
 }: {
   qr: QrCode;
   size: number;
@@ -51,6 +53,7 @@ export function QRView({
   logoIcon?: LogoIcon;
   highlights?: Highlight[];
   animate?: boolean;
+  logoGhost?: boolean; // во время жеста логотип полупрозрачен — видно, какие модули он закрывает
 }) {
   const total = qr.size + quiet * 2;
   const path = useMemo(() => modulesPath(qr.modules, quiet), [qr, quiet]);
@@ -63,27 +66,19 @@ export function QRView({
     reveal.value = withTiming(1, { duration: 650, easing: Easing.out(Easing.cubic) });
   }, [signature]);
 
-  const clipProps = useAnimatedProps(() => ({ height: total * reveal.value }));
+  const coverStyle = useAnimatedStyle(() => ({ top: size * reveal.value, opacity: reveal.value < 1 ? 1 : 0 }));
   const side = logoSide(qr, logoFrac);
   const cell = size / total;
   const Icon = logoIcon !== "none" ? ICONS[logoIcon] : null;
-  const clipId = `clip-${signature}`;
 
   return (
     <View style={{ width: size, height: size }}>
       <Svg width={size} height={size} viewBox={`0 0 ${total} ${total}`}>
-        <Defs>
-          <ClipPath id={clipId}>
-            <AnimatedRect x={0} y={0} width={total} animatedProps={clipProps} />
-          </ClipPath>
-        </Defs>
         <Rect x={0} y={0} width={total} height={total} fill={bg} />
-        <G clipPath={`url(#${clipId})`}>
-          <Path d={path} fill={fg} />
-          {highlights.map((h, i) => (
-            <Path key={i} d={h.cells.map((c) => `M${c.x + quiet} ${c.y + quiet}h1v1h-1z`).join("")} fill={h.color} opacity={0.75} />
-          ))}
-        </G>
+        <Path d={path} fill={fg} />
+        {highlights.map((h, i) => (
+          <Path key={i} d={h.cells.map((c) => `M${c.x + quiet} ${c.y + quiet}h1v1h-1z`).join("")} fill={h.color} opacity={0.75} />
+        ))}
         {side > 0 ? (
           <Rect
             x={quiet + (qr.size - side) / 2}
@@ -92,9 +87,13 @@ export function QRView({
             height={side}
             rx={side * 0.22}
             fill={bg}
+            opacity={logoGhost ? 0.35 : 1}
           />
         ) : null}
       </Svg>
+      {animate ? (
+        <Animated.View pointerEvents="none" style={[{ position: "absolute", left: 0, right: 0, bottom: 0, backgroundColor: bg, borderTopWidth: 2, borderTopColor: light.accent }, coverStyle]} />
+      ) : null}
       {side > 0 ? (
         <View
           pointerEvents="none"
@@ -106,6 +105,7 @@ export function QRView({
             height: (side - 1) * cell,
             borderRadius: (side - 1) * cell * 0.24,
             backgroundColor: fg,
+            opacity: logoGhost ? 0.3 : 1,
             alignItems: "center",
             justifyContent: "center",
           }}

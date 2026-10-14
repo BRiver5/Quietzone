@@ -110,7 +110,7 @@ export default function PrintScreen() {
               </Text>
               {burst ? (
                 <View key={burst}>
-                  <SuccessBurst visible size={40} />
+                  <SuccessBurst visible size={40} onDone={() => setTimeout(() => setBurst(0), 500)} />
                 </View>
               ) : null}
             </View>
@@ -164,7 +164,7 @@ export default function PrintScreen() {
                 <Text style={{ flex: 1.2, ...t.typography.caption, color: t.colors.inkMuted }}>{r.field}</Text>
                 <Text style={{ flex: 1, ...t.typography.caption, ...t.typography.number, color: t.colors.ink }}>{r.field === "Verdict" ? VERDICT_TEXT[r.before as "ok"] : r.before}</Text>
                 <ArrowRight size={12} color={t.colors.inkFaint} style={{ width: 18 }} />
-                <Text style={{ flex: 1, ...t.typography.caption, ...t.typography.number, fontWeight: "700", color: r.better === null ? t.colors.ink : r.better ? t.colors.success : t.colors.danger }}>
+                <Text style={{ flex: 1, ...t.typography.caption, fontFamily: t.typography.title.fontFamily, color: r.better === null ? t.colors.ink : r.better ? t.colors.success : t.colors.danger }}>
                   {r.field === "Verdict" ? VERDICT_TEXT[r.after as "ok"] : r.after}
                 </Text>
               </Animated.View>
@@ -203,11 +203,11 @@ export default function PrintScreen() {
               <Text style={{ ...t.typography.caption, color: t.colors.ink }}>
                 {pSummary.confidence === "prior"
                   ? "No tests yet — this is the general rule, not your printer."
-                  : `Reads reliably from ${pSummary.recommended.toFixed(2)} mm of module per 10 cm (90% sure), learned from ${profile.tests} test${profile.tests === 1 ? "" : "s"}.`}
+                  : `Reads reliably from ${pSummary.recommended.toFixed(2)} mm of module per 10 cm (80% sure), learned from ${profile.tests} test${profile.tests === 1 ? "" : "s"}.`}
                 {okRate ? ` ${Math.round(okRate.p * 100)}% of tests scanned.` : ""}
               </Text>
               <Text style={{ ...t.typography.caption, color: t.colors.inkMuted }}>
-                Dashed line: this code at {code.distanceCm} cm. Right of the shaded band — safe; inside — a coin toss.
+                Dashed line: this code at {code.distanceCm} cm. Shaded band: where the threshold probably lies (10–90%). Right of it — safe; inside — a coin toss.
               </Text>
               <PressableScale onPress={() => setTestOpen(true)} style={{ backgroundColor: t.colors.accentSoft, borderRadius: t.radius.pill, paddingVertical: 12, alignItems: "center" }}>
                 <Text style={{ ...t.typography.label, color: t.colors.accentDeep }}>Log a scan test</Text>

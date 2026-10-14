@@ -30,7 +30,7 @@ export const useApp = create<State>((set) => ({
   },
 }));
 
-// Порог профиля (90-й перцентиль — с запасом) или правило по умолчанию.
+// Порог профиля (с запасом, см. summarize) или правило по умолчанию.
 export function ratioFor(profileId: string | null, profiles: Profile[]): number {
   const p = profiles.find((x) => x.id === profileId);
   return p ? summarize(p.posterior, p.tests).recommended : DEFAULT_RATIO;

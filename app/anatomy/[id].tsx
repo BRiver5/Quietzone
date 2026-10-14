@@ -63,7 +63,7 @@ export default function AnatomyScreen() {
             ["Blocks", String(qr.blocks.length)],
             ["Fixable / block", String(correctablePerBlock(qr.version, qr.ecl))],
           ].map(([k, v]) => (
-            <View key={k} style={{ width: (width - 40 - 32 - 20) / 3, backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md, padding: 10 }}>
+            <View key={k} style={{ width: "31%", flexGrow: 1, backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md, padding: 10 }}>
               <Text style={{ ...t.typography.overline, fontSize: 10, color: t.colors.inkMuted }}>{k}</Text>
               <Text style={{ ...t.typography.subtitle, ...t.typography.number, color: t.colors.ink }}>{v}</Text>
             </View>
@@ -93,7 +93,7 @@ export default function AnatomyScreen() {
             ))}
           </View>
           <Text style={{ ...t.typography.caption, color: t.colors.inkMuted }}>
-            Interleaving spreads every block across the whole code, so a scratch in one place damages a little of many blocks instead of all of one. Pale cells are error-correction codewords.
+            Interleaving spreads every block across the whole code, so a scratch in one place damages a little of many blocks instead of all of one. Bright cells carry data, paler ones error correction; each colour is one block.
           </Text>
           <BlockLegend qr={qr} damage={code.logoFrac > 0 ? e.damage : null} selected={block} onSelect={setBlock} />
           {code.logoFrac > 0 ? (

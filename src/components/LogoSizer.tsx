@@ -124,7 +124,7 @@ export function LogoSizer({
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ width: size, height: size }}>
-        <QRView qr={qr} size={size} fg={fg} bg={bg} quiet={quiet} logoFrac={draft} logoIcon={logoIcon} highlights={highlights} animate={!dragging} />
+        <QRView qr={qr} size={size} fg={fg} bg={bg} quiet={quiet} logoFrac={draft} logoIcon={logoIcon} highlights={highlights} animate={!dragging} logoGhost={dragging} />
         <GestureDetector gesture={pan}>
           <Animated.View
             hitSlop={18}
